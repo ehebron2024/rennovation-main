@@ -1,13 +1,14 @@
-
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, useColorScheme } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import Logo from '../assets/icon.png';
-import { colors } from '../constants/theme';
+import { Colors } from '../constants/Colors';
 import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? 'light'] ?? Colors.light;
 
   const handleLogout = async () => {
     try {
@@ -85,10 +86,10 @@ export default Home;
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: Colors.background,
   },
   header: {
-    backgroundColor: colors.primary,
+    backgroundColor: Colors.primary,
     paddingHorizontal: 20,
     paddingVertical: 16,
     flexDirection: 'row',
@@ -96,19 +97,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   logoText: {
-    color: colors.white,
+    color: Colors.white,
     fontSize: 16,
     fontWeight: '700',
     lineHeight: 20,
   },
   callButton: {
-    backgroundColor: colors.white,
+    backgroundColor: Colors.white,
     paddingHorizontal: 20,
     paddingVertical: 8,
     borderRadius: 999,
   },
   callButtonText: {
-    color: colors.primary,
+    color: Colors.primary,
     fontWeight: '600',
   },
   content: {
@@ -117,26 +118,26 @@ const styles = StyleSheet.create({
     paddingTop: 24,
   },
   sectionLabel: {
-    color: colors.accent,
+    color: Colors.accent,
     fontSize: 14,
     fontWeight: '600',
     marginBottom: 8,
   },
   title: {
-    color: colors.textMain,
+    color: Colors.textMain,
     fontSize: 26,
     fontWeight: '700',
     lineHeight: 32,
     marginBottom: 16,
   },
   bodyText: {
-    color: colors.textSub,
+    color: Colors.textSub,
     fontSize: 14,
     lineHeight: 20,
     marginBottom: 24,
   },
   primaryButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: Colors.primary,
     paddingHorizontal: 28,
     paddingVertical: 12,
     borderRadius: 999,
@@ -144,7 +145,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   primaryButtonText: {
-    color: colors.white,
+    color: Colors.white,
     fontSize: 16,
     fontWeight: '600',
   },
