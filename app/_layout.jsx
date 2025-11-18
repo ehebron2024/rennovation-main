@@ -1,7 +1,6 @@
-
 import { Stack } from "expo-router";
 import { AuthProvider } from "../context/AuthContext";
-import { Colors } from "../constants/colors";
+import { Colors } from "../constants/Colors";
 import { useColorScheme } from "react-native";
 import { StatusBar } from "expo-status-bar";
 
@@ -22,6 +21,7 @@ export default function RootLayout() {
         <Stack.Screen name="about" options={{ title: "About" }} />
         <Stack.Screen name="contact" options={{ title: "Contact", headerShown: false }} />
         <Stack.Screen name="new_inquiry" options={{ title: "New Inquiry" }} />
+        <Stack.Screen name="inquiries" options={{ title: "My Inquiries" }} />
         <Stack.Screen name="signIn" options={{ title: "Sign In" }} />
         <Stack.Screen name="signUp" options={{ title: "Sign Up" }} />
       </Stack>
