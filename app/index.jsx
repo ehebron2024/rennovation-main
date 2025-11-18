@@ -1,14 +1,29 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image } from 'react-native'
-import { Link } from 'expo-router'
-import Logo from '../assets/icon.png'
-import { colors } from '../constants/theme'
+
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { Link, useRouter } from 'expo-router';
+import Logo from '../assets/icon.png';
+import { colors } from '../constants/theme';
+import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/');
+    } catch (error) {
+      console.error("Failed to log out: ", error);
+    }
+  };
+
   return (
     <ScrollView style={styles.root}>
       {/* Top dark green header bar */}
       <View style={styles.header}>
-        <Text style={styles.logoText}>GREENVIEW{'\n'}RENOVATION</Text>
+        <Text style={styles.logoText}>GREENVIEW{
+'\n'}RENOVATION</Text>
 
         <TouchableOpacity style={styles.callButton}>
           <Text style={styles.callButtonText}>561-660-0955</Text>
@@ -20,7 +35,8 @@ const Home = () => {
         <Image source={Logo} style={styles.img} />
         <Text style={styles.sectionLabel}>Greenview Renovation</Text>
         <Text style={styles.title}>
-          Home Remodeling and{'\n'}Renovation Contractors
+          Home Remodeling and{
+'\n'}Renovation Contractors
         </Text>
 
         <Text style={styles.bodyText}>
@@ -40,13 +56,31 @@ const Home = () => {
           </Link>
         </TouchableOpacity>
 
-        <Link href="/contact" style={styles.link}>Contact Page</Link>
+        {user && (
+            <TouchableOpacity style={styles.primaryButton}>
+                <Link href="/inquiries" style={styles.primaryButtonText}>My Inquiries</Link>
+            </TouchableOpacity>
+        )}
+
+        {user ? (
+          <TouchableOpacity style={styles.primaryButton} onPress={handleLogout}>
+            <Text style={styles.primaryButtonText}>Sign Out</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.primaryButton}>
+            <Link href="/signIn" style={styles.primaryButtonText}>Sign In</Link>
+          </TouchableOpacity>
+        )}
+
+        <TouchableOpacity style={styles.primaryButton}>
+          <Link href="/contact" style={styles.primaryButtonText}>Contact Us</Link>
+        </TouchableOpacity>
       </View>
     </ScrollView>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
 
 const styles = StyleSheet.create({
   root: {
@@ -107,6 +141,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 999,
     alignSelf: 'flex-start',
+    marginBottom: 16,
   },
   primaryButtonText: {
     color: colors.white,
@@ -119,4 +154,4 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     resizeMode: 'contain',
   },
-})
+});

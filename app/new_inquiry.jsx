@@ -1,41 +1,103 @@
-import { useState } from 'react'
-import { StyleSheet, Text, TextInput, View, ScrollView, TouchableOpacity } from 'react-native'
-import { Link } from 'expo-router'
+
+import { useState, useEffect } from 'react';
+import { StyleSheet, Text, TextInput, View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useAuth } from '../context/AuthContext';
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 const NewInquiry = () => {
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
-  const [address, setAddress] = useState('')
-  const [postalCode, setPostalCode] = useState('')
-  const [budget, setBudget] = useState('')
-  const [startDate, setStartDate] = useState('')
-  const [projectDescription, setProjectDescription] = useState('')
+  const { user, db } = useAuth();
+  const router = useRouter();
 
-  const handleSubmit = () => {
-    // For now just log; later you can POST to an API / email, etc.
-    console.log({
-      firstName,
-      lastName,
-      email,
-      phone,
-      address,
-      postalCode,
-      budget,
-      startDate,
-      projectDescription,
-    })
-    // You might show an alert or clear fields here
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [budget, setBudget] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [projectDescription, setProjectDescription] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+
+  useEffect(() => {
+    if (user) {
+      setEmail(user.email);
+    }
+  }, [user]);
+
+  const handleSubmit = async () => {
+    if (!firstName || !lastName || !email || !projectDescription) {
+        setError('Please fill out all required fields.');
+        return;
+    }
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    try {
+        await addDoc(collection(db, "inquiries"), {
+            uid: user.uid,
+            firstName,
+            lastName,
+            email,
+            phone,
+            address,
+            postalCode,
+            budget,
+            startDate,
+            projectDescription,
+            createdAt: serverTimestamp()
+        });
+        setSuccess('Your project inquiry has been submitted successfully!');
+        // Clear form
+        setFirstName('');
+        setLastName('');
+        setPhone('');
+        setAddress('');
+        setPostalCode('');
+        setBudget('');
+        setStartDate('');
+        setProjectDescription('');
+    } catch (err) {
+        setError('Failed to submit inquiry. Please try again.');
+        console.error(err);
+    }
+    setLoading(false);
+  };
+
+  if (user === null) {
+    return (
+      <View style={styles.signInPrompt}>
+        <Text style={styles.signInText}>Please sign in or sign up to create a new inquiry.</Text>
+        <TouchableOpacity
+          style={styles.signInButton}
+          onPress={() => router.push('/signIn')}
+        >
+          <Text style={styles.signInButtonText}>Sign In</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.signUpButton}
+          onPress={() => router.push('/signUp')}
+        >
+          <Text style={styles.signInButtonText}>Sign Up</Text>
+        </TouchableOpacity>
+      </View>
+    );
   }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>New Project Inquiry</Text>
       <Text style={styles.subheader}>
-        Greenview is here to help you throughout every step of the way.
-        Tell us about your project and we’ll get back to you shortly.
+        Greenview is here to help you throughout every step of the way. Tell us
+        about your project and we’ll get back to you shortly.
       </Text>
+
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+      {success ? <Text style={styles.success}>{success}</Text> : null}
 
       <View style={styles.row}>
         <View style={[styles.inputGroup, styles.rowItem]}>
@@ -67,6 +129,7 @@ const NewInquiry = () => {
           placeholder="you@example.com"
           keyboardType="email-address"
           autoCapitalize="none"
+          editable={false} // User's email is not editable
         />
       </View>
 
@@ -136,19 +199,17 @@ const NewInquiry = () => {
         />
       </View>
 
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitText}>Submit Inquiry</Text>
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} disabled={loading}>
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitText}>Submit Inquiry</Text>}
       </TouchableOpacity>
-
-      <Link href="/" style={styles.backLink}>Back Home</Link>
     </ScrollView>
-  )
-}
+  );
+};
 
-export default NewInquiry
+export default NewInquiry;
 
 const styles = StyleSheet.create({
-  container: {
+    container: {
     padding: 20,
     paddingBottom: 40,
   },
@@ -200,9 +261,43 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  backLink: {
-    marginTop: 16,
-    textDecorationLine: 'underline',
-    alignSelf: 'center',
+  signInPrompt: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
-})
+  signInText: {
+    fontSize: 18,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  signInButton: {
+    backgroundColor: '#0E3A32',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 999,
+    marginBottom: 10,
+  },
+    signUpButton: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 999,
+  },
+  signInButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  error: {
+      color: 'red',
+      marginBottom: 10,
+      textAlign: 'center',
+  },
+  success: {
+      color: 'green',
+      marginBottom: 10,
+      textAlign: 'center',
+  }
+});

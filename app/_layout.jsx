@@ -1,14 +1,16 @@
-import { Stack } from "expo-router"
-import { Colors } from "../constants/colors"
-import { useColorScheme } from "react-native"
-import { StatusBar } from "expo-status-bar"
+
+import { Stack } from "expo-router";
+import { AuthProvider } from "../context/AuthContext";
+import { Colors } from "../constants/colors";
+import { useColorScheme } from "react-native";
+import { StatusBar } from "expo-status-bar";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme() // 'light' | 'dark' | null
-  const theme = Colors[colorScheme ?? 'light'] ?? Colors.light
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? 'light'] ?? Colors.light;
 
   return (
-    <>
+    <AuthProvider>
       <StatusBar style="auto" />
       <Stack
         screenOptions={{
@@ -19,8 +21,10 @@ export default function RootLayout() {
         <Stack.Screen name="index" options={{ title: "Home" }} />
         <Stack.Screen name="about" options={{ title: "About" }} />
         <Stack.Screen name="contact" options={{ title: "Contact", headerShown: false }} />
-        <Stack.Screen name="new_inquiry" options={{ title: "New Inquiry" }} /> {/* add this */}
+        <Stack.Screen name="new_inquiry" options={{ title: "New Inquiry" }} />
+        <Stack.Screen name="signIn" options={{ title: "Sign In" }} />
+        <Stack.Screen name="signUp" options={{ title: "Sign Up" }} />
       </Stack>
-    </>
-  )
+    </AuthProvider>
+  );
 }
