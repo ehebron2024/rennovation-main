@@ -1,12 +1,12 @@
 {
   "expo": {
-    "scheme": "rennovationapp",
-    "name": "Rennovation",
-    "slug": "Rennovation",
+    "scheme": "rennovation",
+    "name": "rennovation",
+    "slug": "rennovation",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -29,6 +29,7 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "platforms": ["ios", "android", "web"]
   }
 }

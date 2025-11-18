@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useAuth } from '../context/AuthContext';
